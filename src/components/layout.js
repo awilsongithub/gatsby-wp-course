@@ -6,46 +6,41 @@
  */
 
 import React from "react"
-import PropTypes from "prop-types"
-import { useStaticQuery, graphql } from "gatsby"
+// import PropTypes from "prop-types"
+// import { useStaticQuery, graphql } from "gatsby"
+// import Header from "./header"
+import MainMenu from "./MainMenu"
+// import "./layout.css"
+import styled, { createGlobalStyle } from 'styled-components';
 
-import Header from "./header"
-import "./layout.css"
+const GlobalStyles = createGlobalStyle`
+  @import url('https://fonts.googleapis.com/css2?family=Open+Sans:wght@300;400;700&display=swap');
 
-const Layout = ({ children }) => {
-  const data = useStaticQuery(graphql`
-    query SiteTitleQuery {
-      site {
-        siteMetadata {
-          title
-        }
-      }
-    }
-  `)
+  body{
+    font-family: 'Open Sans', sans-serif;
+    margin: 0 !important;
+    padding: 0 !important;
+  }
+`;
 
-  return (
-    <>
-      <Header siteTitle={data.site.siteMetadata.title} />
-      <div
-        style={{
-          margin: `0 auto`,
-          maxWidth: 960,
-          padding: `0 1.0875rem 1.45rem`,
-        }}
-      >
-        <main>{children}</main>
-        <footer>
-          © {new Date().getFullYear()}, Built with
-          {` `}
-          <a href="https://www.gatsbyjs.org">Gatsby</a>
-        </footer>
-      </div>
-    </>
-  )
-}
+ const LayoutWrapper = styled.div`
+  max-width: 960px;
+  width: 90vw;
+  margin: 0 auto;
+`;
 
-Layout.propTypes = {
-  children: PropTypes.node.isRequired,
-}
+const Layout = ( { children } ) => (
+  <div>
+    <GlobalStyles />
+    <MainMenu />
+    <LayoutWrapper>
+      { children }
+    </LayoutWrapper>
+  </div>
+)
 
-export default Layout
+// Layout.propTypes = {
+//   children: PropTypes.node.isRequired,
+// }
+
+export default Layout;
