@@ -30,9 +30,9 @@ const SiteInfo = () => (
         <SiteTitle>
           { props.allWordpressSiteMetadata.edges[0].node.name }
         </SiteTitle>
-        <div>
+        {/* <div>
           { props.allWordpressSiteMetadata.edges[0].node.description }
-        </div>
+        </div> */}
       </SiteInfoWrapper>
     ) } />
 )

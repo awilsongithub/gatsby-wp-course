@@ -4,24 +4,19 @@ const Promise = require( `bluebird` )
 const path = require( `path` )
 const slash = require( `slash` )
 
-// Implement the Gatsby API “createPages”. This is
-// called after the Gatsby bootstrap is finished so you have
-// access to any information necessary to programmatically
-// create pages.
-// Will create pages for WordPress pages (route : /{slug})
-// Will create pages for WordPress posts (route : /post/{slug})
+// TODO goes futher than storing the data. it CREATES ALL THE PAGES upfront using the stores actions object
 exports.createPages = ( { graphql, actions } ) => {
 
   const { createPage, createRedirect } = actions;
-  createRedirect( { fromPath: '/', toPath: '/home', redirectInBrowser: true, isPermanent: true } );
+  createRedirect( {
+    fromPath: '/',
+    toPath: '/home',
+    redirectInBrowser: true,
+    isPermanent: true
+  } );
 
   return new Promise( ( resolve, reject ) => {
-    // The “graphql” function allows us to run arbitrary
-    // queries against the local WordPress graphql schema. Think of
-    // it like the site has a built-in database constructed
-    // from the fetched data that you can run queries against.
 
-    // ==== PAGES (WORDPRESS NATIVE) ====
     graphql(
       `
         {
@@ -34,6 +29,7 @@ exports.createPages = ( { graphql, actions } ) => {
                 template
                 title
                 content
+                template
               }
             }
           }
@@ -42,72 +38,68 @@ exports.createPages = ( { graphql, actions } ) => {
     )
       .then( result => {
         if ( result.errors ) {
-          console.log( result.errors )
-          reject( result.errors )
+          console.log( result.errors );
+          reject( result.errors );
         }
 
-        // Create Page pages.
-        const pageTemplate = path.resolve( "./src/templates/page.js" )
-        // We want to create a detailed page for each
-        // page node. We'll just use the WordPress Slug for the slug.
-        // The Page ID is prefixed with 'PAGE_'
-        _.each( result.data.allWordpressPage.edges, edge => {
-          // Gatsby uses Redux to manage its internal state.
-          // Plugins and sites can use functions like "createPage"
-          // to interact with Gatsby.
+        _.each( result.data.allWordpressPage.edges, page => {
+          let template;
+
+          // TODO use php file only to configure which template via admin 
+          if ( page.node.template == 'portfolio_under_content.php' ) {
+            template = path.resolve( "./src/templates/portfolioUnderContent.js" );
+          } else {
+            template = path.resolve( "./src/templates/page.js" );
+          }
 
           createPage( {
-            // Each page is required to have a `path` as well
-            // as a template component. The `context` is
-            // optional but is often necessary so the template
-            // can query data specific to each page.
-            path: `/${edge.node.slug}/`,
-            component: slash( pageTemplate ),
-            context: edge.node
-          } )
+            path: `/${page.node.slug}/`,
+            component: slash( template ),
+            context: page.node // all page props 
+          } );
         } )
       } )
-      // ==== END PAGES ====
 
-      // ==== POSTS (WORDPRESS NATIVE AND ACF) ====
       .then( () => {
         graphql(
-          `
-            {
-              allWordpressPost {
-                edges{
-                  node{
-                    id
-                    title
-                    slug
-                    content
-                    status
-                    template
-                    format
+          `{
+            allWordpressWpPortfolio {
+              edges {
+                node {
+                  title
+                  id
+                  slug
+                  acf {
+                    portfolio_name
+                    portfolio_title
+                    portfolio_email
+                    portfolio_bio
+                    portfolio_image {
+                      source_url
+                    }
                   }
                 }
               }
             }
+          }
           `
         ).then( result => {
           if ( result.errors ) {
-            console.log( result.errors )
-            reject( result.errors )
+            console.log( result.errors );
+            reject( result.errors );
           }
-          const postTemplate = path.resolve( "./src/templates/post.js" )
-          // We want to create a detailed page for each
-          // post node. We'll just use the WordPress Slug for the slug.
-          // The Post ID is prefixed with 'POST_'
-          _.each( result.data.allWordpressPost.edges, edge => {
+          const template = path.resolve( "./src/templates/portfolio.js" );
+          const posts = result.data.allWordpressWpPortfolio.edges;
+
+          _.each( posts, post => {
             createPage( {
-              path: `/post/${edge.node.slug}/`,
-              component: slash( postTemplate ),
-              context: edge.node
-            } )
+              path: `/portfolio/${post.node.slug}/`,
+              component: slash( template ),
+              context: post.node
+            } );
           } )
-          resolve()
+          resolve();
         } )
       } )
-    // ==== END POSTS ====
   } )
 }
