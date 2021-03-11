@@ -31,7 +31,7 @@ const PortfolioItems = () => (
         render={ props => (
           props.allWordpressWpPortfolio.edges.map( post => (
 
-            // TODO this is a bunch of bulma classes. 
+            // TODO this is a bunch of bulma classes. can add just what we want
             <div className="column is-four-quarters-desktop is-half-tablet is-one-third-desktop" key={ post.node.id }>
               <div className="card" >
                 <div className="card-image">

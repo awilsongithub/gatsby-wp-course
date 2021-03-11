@@ -11,13 +11,14 @@ $pink: #FA7C91;
 $brown: #757763;
 $beige-light: #D0D1CD;
 $beige-lighter: #EFF0EB;
+$white: #fff;
 
 // Update Bulma's global variables
 $family-sans-serif: "Nunito", sans-serif;
 $grey-dark: $brown;
 $grey-light: $beige-light;
 $primary: $purple;
-$link: $pink;
+$link: $white;
 $widescreen-enabled: false;
 $fullhd-enabled: false;
 
@@ -26,6 +27,9 @@ $body-background-color: $beige-lighter;
 $control-border-width: 2px;
 $input-border-color: transparent;
 $input-shadow: none;
+$radius-small: 0;
+$radius: 0;
+$radius-large: 0;
 
 @import "~bulma/bulma.sass";
 
